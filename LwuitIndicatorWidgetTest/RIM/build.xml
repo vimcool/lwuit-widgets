@@ -2,7 +2,7 @@
 <!-- You may freely edit this file. See commented blocks below for -->
 <!-- some examples of how to customize the build. -->
 <!-- (If you delete it and reopen the project it will be recreated.) -->
-<project name="LwuitWidgets" default="jar" basedir=".">
+<project name="LwuitIndicatorWidgetTest_RIM" default="jar" basedir=".">
     <description>Builds, tests, and runs the project .</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
@@ -80,4 +80,42 @@
             </target>
 
             -->
+    <target name="create-cod" if="blackberry.trigger">
+        <exec dir="${dist.dir}" executable="java" failonerror="true">
+            <arg value="-cp"/>
+            <arg value="${platform.home}/bin/rapc.jar"/>
+            <arg value="net.rim.tools.compiler.Compiler"/>
+            <arg value="import=${platform.bootclasspath}"/>
+            <arg value="codename=${name}"/>
+            <arg value="-cldc"/>
+            <arg value="jad=${basedir}/${dist.dir}/${dist.jad}"/>
+            <arg value="${basedir}/${dist.dir}/${dist.jar}"/>
+        </exec>
+        <property file="${dist.dir}/${dist.jad}"/>
+        <echo file="${basedir}/${dist.dir}/${name}.alx">
+&lt;loader version="1.0"&gt;
+    &lt;application id="${name}"&gt;
+        &lt;name&gt;
+            ${MIDlet-Name}
+        &lt;/name&gt;
+        &lt;description&gt;
+            ${MIDlet-Description}
+        &lt;/description&gt;
+        &lt;version&gt;
+            ${MIDlet-Version}
+        &lt;/version&gt;
+        &lt;vendor&gt;
+            ${MIDlet-Vendor}
+        &lt;/vendor&gt;
+        &lt;copyright&gt;
+            ${MIDlet-Copyright}
+        &lt;/copyright&gt;
+        &lt;fileset Java="1.0"&gt;
+            &lt;directory/&gt;
+            &lt;files&gt;${name}.cod&lt;/files&gt;
+        &lt;/fileset&gt;
+    &lt;/application&gt;
+&lt;/loader&gt;
+        </echo>
+    </target>
 </project>

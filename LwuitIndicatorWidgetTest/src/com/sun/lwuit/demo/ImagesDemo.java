@@ -10,6 +10,7 @@ import com.sun.lwuit.Component;
 import com.sun.lwuit.ComponentGroup;
 import com.sun.lwuit.Container;
 import com.sun.lwuit.Display;
+import com.sun.lwuit.Form;
 import com.sun.lwuit.Indicator;
 import com.sun.lwuit.IndicatorEventListener;
 import com.sun.lwuit.Label;
@@ -28,19 +29,20 @@ import com.sun.lwuit.spinner.Spinner;
  */
 public class ImagesDemo extends Demo {
 	
-	Container indicator;
-	Indicator in;
-	private IndicatorEventListener indiListener;
+    Container indicator;
+    Indicator in;
+    private IndicatorEventListener indiListener;
 	
     public String getName() {
         return "Images";
     }
 
-    protected void executeDemo(final Container f) {
-        f.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
-        f.setScrollable(false);
+    protected void executeDemo(Form f) {
+        final Container ctn = f.getContentPane();
+        ctn.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
+        ctn.setScrollable(false);
         Border border = Border.createLineBorder(1, 0x000000);
-        Style style = f.getUnselectedStyle(); 
+        Style style = ctn.getUnselectedStyle(); 
         style.setBorder(border, false);
         style.setMargin(0, 0, 0, 0);
         style.setPadding(0, 0, 0, 0);
@@ -48,12 +50,8 @@ public class ImagesDemo extends Demo {
 
         in = new Indicator();
         in.setType(Indicator.TYPE_RAW_BOX);
-        in.setGap(4);
-        in.setNavigationGap(2);
-        in.setNavigationToBorderGap(2);
-        in.setNavigationToItemGap(2);
-        in.setQuantum(5);
-        in.setTotal(75);
+        in.setQuantum(1);
+        in.setTotal(7);
         in.setBehaviour(Indicator.BEHAVIOUR_SHOW_NAVGATION_WHEN_BESIDE);
         
         Style s = in.getUnselectedStyle(); 
@@ -103,7 +101,7 @@ public class ImagesDemo extends Demo {
         style.setPadding(0, 0, 0, 0);
         style = null;
         indicator.addComponent(in);
-        f.addComponent(indicator);
+        ctn.addComponent(indicator);
 
         Container controls = new Container(new BoxLayout(BoxLayout.Y_AXIS));
         controls.setScrollableX(false);
@@ -113,7 +111,7 @@ public class ImagesDemo extends Demo {
         style.setMargin(0, 0, 0, 0);
         style.setPadding(0, 0, 0, 0);
         style = null;
-        f.addComponent(controls);
+        ctn.addComponent(controls);
         
         Button message = new Button("            Press 4 to navigate left in the indicator,            Press 6 to navigate right in the indicator.");
         message.setUIID("Label");
@@ -279,8 +277,8 @@ public class ImagesDemo extends Demo {
         	}
         });
         gaps.addComponent(createPair("2Bdr", naviToBorderGapSpinner, BorderLayout.SOUTH));
-        Spinner maxIndiPerGroupSpinner = Spinner.create(0, 20, in.getMaxIndicatorsPerGroup(), 1);
-        maxIndiPerGroupSpinner.setValue(new Integer(in.getMaxIndicatorsPerGroup()));
+        Spinner maxIndiPerGroupSpinner = Spinner.create(0, 20, in.getMaxTimelineItems(), 1);
+        maxIndiPerGroupSpinner.setValue(new Integer(in.getMaxTimelineItems()));
         maxIndiPerGroupSpinner.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				in.setMaxIndicatorsPerGroup(((Integer)((Spinner)arg0.getSource()).getValue()).intValue());
@@ -292,19 +290,27 @@ public class ImagesDemo extends Demo {
         gaps.addComponent(createPair("Group", maxIndiPerGroupSpinner, BorderLayout.SOUTH));
         controls.addComponent(gapping);
         
-        f.revalidate();
+        ctn.revalidate();
+        
+        final ActionListener leftKey = new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                indiListener.previous();
+            }
+        };
+        final ActionListener rightKey = new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                indiListener.next();
+            }
+        };
+        
+        f.addKeyListener(52, leftKey);
+        f.addKeyListener(54, rightKey);
+        f.addKeyListener(Display.GAME_LEFT, leftKey);
+        f.addKeyListener(Display.GAME_RIGHT, rightKey);
         
         style = null;
         border = null;
         s = null;
-    }
-    
-    public void keyReleased(int keyCode) {
-        if(keyCode == Display.GAME_LEFT) {
-            indiListener.previous();
-        } else if(keyCode == Display.GAME_RIGHT) {
-        	indiListener.next();
-        }
     }
     
     public void revalidateIndicator() {

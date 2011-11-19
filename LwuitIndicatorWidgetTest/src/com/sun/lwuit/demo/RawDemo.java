@@ -5,6 +5,7 @@ package com.sun.lwuit.demo;
 
 import com.sun.lwuit.Container;
 import com.sun.lwuit.Display;
+import com.sun.lwuit.Form;
 import com.sun.lwuit.IndicatorEventListener;
 import com.sun.lwuit.TextArea;
 import com.sun.lwuit.plaf.UIManager;
@@ -13,7 +14,7 @@ import com.sun.lwuit.plaf.UIManager;
  */
 public class RawDemo extends Demo {
 	
-	private IndicatorEventListener indiListener;
+    private IndicatorEventListener indiListener;
 
     public String getName() {
         return "Raw";
@@ -23,9 +24,10 @@ public class RawDemo extends Demo {
         return UIManager.getInstance().localize("buttonHelp", "Help description");
     }
 
-    protected void executeDemo(final Container f) {
-    	f.addComponent(new TextArea("Raw mode indicator is under development, please visit back or write to me vimal.lwuit@ymail.com"));
-//        f.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
+    protected void executeDemo(final Form f) {
+        final Container ctn = f.getContentPane();
+    	ctn.addComponent(new TextArea("Raw mode indicator is under development, please visit back or write to me vimal.lwuit@ymail.com"));
+//        ctn.setLayout(new BoxLayout(BoxLayout.Y_AXIS));
 //
 //        Indicator in = new Indicator();
 //        in.setType(Indicator.TYPE_RAW_BOX);
@@ -62,17 +64,9 @@ public class RawDemo extends Demo {
 //        s.setMargin(0, 5, 0, 0);
 //
 //        indiListener = in.getIndicatorEventListener();
-//        f.addComponent(in);
+//        ctn.addComponent(in);
 //
 //        s = null;
 //        in = null;
-    }
-    
-    public void keyReleased(int keyCode) {
-        if(keyCode == Display.GAME_LEFT) {
-            indiListener.previous();
-        } else if(keyCode == Display.GAME_RIGHT) {
-        	indiListener.next();
-        }
     }
 }

@@ -100,11 +100,11 @@ public class UIDemoMain  implements ActionListener {
         return mainMenu;
     }
     
-    public void setMainFormAndParams(Form main, Button[] _demoButtons) {
+    public void setMainFormAndParams(Form main, Button[] demoButtons) {
         mainMenu = main;
         UIManager.getInstance().setLookAndFeel(new IndicatorDefaultLookAndFeel());
-        demoButtons = new Button[_demoButtons.length];
-        System.arraycopy(_demoButtons,0,demoButtons,0,demoButtons.length);
+        this.demoButtons = new Button[demoButtons.length];
+        System.arraycopy(demoButtons,0,this.demoButtons,0,this.demoButtons.length);
     }
 
     private void buildMainForm() {

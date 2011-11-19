@@ -2,7 +2,7 @@
 <!-- You may freely edit this file. See commented blocks below for -->
 <!-- some examples of how to customize the build. -->
 <!-- (If you delete it and reopen the project it will be recreated.) -->
-<project name="LwuitWidgets" default="jar" basedir=".">
+<project name="LwuitIndicatorWidgetTest" default="jar" basedir=".">
     <description>Builds, tests, and runs the project .</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
@@ -80,4 +80,8 @@
             </target>
 
             -->
+
+    <target name="extract-libs" description="Dont do this">
+        <!-- workaround for Netbeans 6.9 bug -->
+    </target>
 </project>

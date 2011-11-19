@@ -66,16 +66,6 @@ public abstract class Demo {
             demoForm.setBackCommand(backCommand);
         }
         demoForm.addCommandListener(commandListener);
-        demoForm.addKeyListener(52, new ActionListener() {
-        	public void actionPerformed(ActionEvent evt) {
-        		keyReleased(Display.GAME_LEFT);
-        	}
-        });
-        demoForm.addKeyListener(54, new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				keyReleased(Display.GAME_RIGHT);
-			}
-		});
         execute(demoForm);
         demoForm.show();
     }
@@ -105,10 +95,10 @@ public abstract class Demo {
      * The demo should place its UI into the given form 
      */
     protected final void execute(Form f) {
-        executeDemo(f.getContentPane());
+        executeDemo(f);
     }
 
-    protected abstract void executeDemo(Container f);
+    protected abstract void executeDemo(Form f);
   
     /**
      * Helper method that allows us to create a pair of components label and the given
@@ -146,6 +136,4 @@ public abstract class Demo {
     
      public void cleanup() {
      }
-     
-     public abstract void keyReleased(int keyCode);
 }
