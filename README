@@ -1,1 +1,66 @@
-The aim of this project is to provide cutting edge widgets using LWUIT library.
+********************************************************************
+**************************** AUTHOR ********************************
+********************************************************************
+
+Vimal (vimal.lwuit@ymail.com)
+
+
+
+
+********************************************************************
+******************************** AIM *******************************
+********************************************************************
+
+The aim of this project is to provide cutting edge widgets using 
+LWUIT library.
+
+
+
+
+********************************************************************
+******************** STESP TO USE THIS WIDGET **********************
+********************************************************************
+
+1) Using '.jar'
+	Download the jar file '/LwuitWidgets/dist/LwuitWidgets.jar'
+	
+2) Using source code
+	Download the project '/LwuitWidgets' and link it with 
+	your preferred IDE
+
+
+
+
+********************************************************************
+************************ DIRECTORY STRUCTURE ***********************
+********************************************************************
+
+- Lwuit-Widgets				- Parent directory encompassing all my widgets
+        |
+        |-- LwuitWidgets		- Indicator Widget Project		
+        |    |
+        |    |-- dist			- Deployment jar file directory
+        |    |-- src			- Project source classes
+        |    |-- build
+        |    |-- lib
+        |    |-- nbproject
+        |    |-- res
+        |    |-- test
+        |
+        |
+        |-- LwuitIndicatorWidgetTest	- Indicator Widget Test Project
+        |    |
+        |    |-- dist			- Deployment jar file directory
+        |    |-- src			- Project source classes
+        |    |-- build
+        |    |-- lib
+        |    |-- nbproject
+        |    |-- res
+        |    |-- test
+        |
+        |
+        |-- README			- Must read file
+        
+       
+Thanks & Enjoy !
+Vimal (vimal.lwuit@ymail.com)
