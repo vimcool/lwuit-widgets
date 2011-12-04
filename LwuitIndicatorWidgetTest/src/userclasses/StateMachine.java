@@ -5,13 +5,16 @@
 package userclasses;
 
 import com.sun.lwuit.Button;
+import com.sun.lwuit.Command;
 import com.sun.lwuit.Component;
 import com.sun.lwuit.Container;
+import com.sun.lwuit.Dialog;
 import com.sun.lwuit.Form;
 import com.sun.lwuit.events.ActionEvent;
 import generated.StateMachineBase;
 import com.sun.lwuit.demo.UIDemoMain;
-import com.sun.lwuit.events.ActionListener;
+import com.sun.lwuit.layouts.BorderLayout;
+import com.sun.lwuit.plaf.Style;
 
 /**
  *
@@ -37,7 +40,7 @@ public class StateMachine extends StateMachineBase {
     protected void beforeIndicatorDemoMain(Form f) {
         // If the resource file changes the names of components this call will break notifying you that you should fix the code
         super.beforeIndicatorDemoMain(f);
-
+        
         Container root = f.getContentPane();
         UIDemoMain.getInstance().setMainFormAndParams(f, new Button[]{findImages(root), findRaw(root)});
         UIDemoMain.getInstance().startApp();

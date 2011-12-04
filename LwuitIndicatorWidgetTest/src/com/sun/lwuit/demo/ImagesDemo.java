@@ -90,7 +90,7 @@ public class ImagesDemo extends Demo {
         s.setMargin(0, 0, 0, 0);
         s.setPadding(4, 4, 4, 4);
 
-        in.setNavigationEnds(true);
+        in.setNavigationEndsShown(true);
         
         indiListener = in.getIndicatorEventListener();
         
@@ -122,7 +122,7 @@ public class ImagesDemo extends Demo {
         cbxNaviEnds.setSelected(true);
         cbxNaviEnds.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent arg0) {
-        		in.setNavigationEnds(((CheckBox)arg0.getSource()).isSelected());
+        		in.setNavigationEndsShown(((CheckBox)arg0.getSource()).isSelected());
         		in.setShouldCalcPreferredSize(true);
         		indicator.revalidate();
         	}
@@ -133,7 +133,7 @@ public class ImagesDemo extends Demo {
         cbxNaviIncrement.setSelected(true);
         cbxNaviIncrement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				in.setNavigationIncrement(((CheckBox)arg0.getSource()).isSelected());
+				in.setNavigationIncrementShown(((CheckBox)arg0.getSource()).isSelected());
 				in.setShouldCalcPreferredSize(true);
 				indicator.revalidate();
 			}
@@ -145,7 +145,7 @@ public class ImagesDemo extends Demo {
         		"Navigation Always",
         		"Navigation When Besides"
         });
-        behaviour.setSelectedIndex(in.getBehavior());
+        behaviour.setSelectedIndex(in.getBehaviour());
         behaviour.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
         		in.setBehaviour(((ComboBox)arg0.getSource()).getSelectedIndex()+1);
@@ -217,13 +217,6 @@ public class ImagesDemo extends Demo {
         controls.addComponent(createPair("Horizontal Align", hori, BorderLayout.CENTER));
         controls.addComponent(createPair("Vertical Align", vert, BorderLayout.CENTER));
 
-        Container gaps = new Container(new BoxLayout(BoxLayout.X_AXIS));
-        gaps.setScrollable(false);
-        style = gaps.getUnselectedStyle(); 
-        //style.setBorder(border, false);
-        style.setMargin(0, 0, 0, 0);
-        style.setPadding(0, 0, 0, 0);
-        style = null;
         Container gapping = new Container(new BoxLayout(BoxLayout.Y_AXIS));
         gapping.setScrollable(false);
         style = gapping.getUnselectedStyle(); 
@@ -231,8 +224,16 @@ public class ImagesDemo extends Demo {
         style.setMargin(0, 5, 0, 0);
         style.setPadding(0, 0, 0, 0);
         style = null;
+        Container gaps = new Container(new BoxLayout(BoxLayout.X_AXIS));
+        gaps.setScrollable(false);
+        style = gaps.getUnselectedStyle(); 
+        //style.setBorder(border, false);
+        style.setMargin(0, 0, 0, 0);
+        style.setPadding(0, 0, 0, 0);
+        style = null;        
         gapping.addComponent(new Label("Gapping"));
         gapping.addComponent(gaps);
+        
         Spinner gapSpinner = Spinner.create(0, 20, in.getGap(), 1);
         gapSpinner.setValue(new Integer(in.getGap()));
         gapSpinner.addActionListener(new ActionListener() {
@@ -244,6 +245,7 @@ public class ImagesDemo extends Demo {
         	}
         });
         gaps.addComponent(createPair("Item", gapSpinner, BorderLayout.SOUTH));
+        
         Spinner naviToItemGapSpinner = Spinner.create(0, 20, in.getNavigationToItemGap(), 1);
         naviToItemGapSpinner.setValue(new Integer(in.getNavigationToItemGap()));
         naviToItemGapSpinner.addActionListener(new ActionListener() {
@@ -255,6 +257,7 @@ public class ImagesDemo extends Demo {
         	}
         });
         gaps.addComponent(createPair("2Item", naviToItemGapSpinner, BorderLayout.SOUTH));
+        
         Spinner naviGapSpinner = Spinner.create(0, 20, in.getNavigationGap(), 1);
         naviGapSpinner.setValue(new Integer(in.getNavigationGap()));
         naviGapSpinner.addActionListener(new ActionListener() {
@@ -266,6 +269,7 @@ public class ImagesDemo extends Demo {
         	}
         });
         gaps.addComponent(createPair("2Navi", naviGapSpinner, BorderLayout.SOUTH));
+        
         Spinner naviToBorderGapSpinner = Spinner.create(0, 20, in.getNavigationToBorderGap(), 1);
         naviToBorderGapSpinner.setValue(new Integer(in.getNavigationToBorderGap()));
         naviToBorderGapSpinner.addActionListener(new ActionListener() {
@@ -277,11 +281,12 @@ public class ImagesDemo extends Demo {
         	}
         });
         gaps.addComponent(createPair("2Bdr", naviToBorderGapSpinner, BorderLayout.SOUTH));
+        
         Spinner maxIndiPerGroupSpinner = Spinner.create(0, 20, in.getMaxTimelineItems(), 1);
         maxIndiPerGroupSpinner.setValue(new Integer(in.getMaxTimelineItems()));
         maxIndiPerGroupSpinner.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				in.setMaxIndicatorsPerGroup(((Integer)((Spinner)arg0.getSource()).getValue()).intValue());
+				in.setMaxTimelineItems(((Integer)((Spinner)arg0.getSource()).getValue()).intValue());
 				in.setShouldCalcPreferredSize(true);
 				indicator.requestFocus();
 				indicator.revalidate();

@@ -15,7 +15,7 @@ import com.sun.lwuit.animations.Transition;
 import com.sun.lwuit.events.ActionEvent;
 import com.sun.lwuit.events.ActionListener;
 import com.sun.lwuit.layouts.BorderLayout;
-import com.sun.lwuit.plaf.IndicatorDefaultLookAndFeel;
+import com.sun.lwuit.plaf.IndicatorLookAndFeel;
 import com.sun.lwuit.plaf.UIManager;
 import java.util.Hashtable;
 
@@ -102,7 +102,7 @@ public class UIDemoMain  implements ActionListener {
     
     public void setMainFormAndParams(Form main, Button[] demoButtons) {
         mainMenu = main;
-        UIManager.getInstance().setLookAndFeel(new IndicatorDefaultLookAndFeel());
+        UIManager.getInstance().setLookAndFeel(new IndicatorLookAndFeel());
         this.demoButtons = new Button[demoButtons.length];
         System.arraycopy(demoButtons,0,this.demoButtons,0,this.demoButtons.length);
     }
