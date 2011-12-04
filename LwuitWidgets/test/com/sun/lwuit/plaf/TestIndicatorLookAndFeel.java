@@ -18,12 +18,12 @@ import com.sun.lwuit.geom.Dimension;
  * 
  * @author Vimal, vimal.lwuit@ymail.com
  */
-public class IndicatorDefaultLookAndFeel extends DefaultLookAndFeel implements FocusListener {
+public class IndicatorLookAndFeel extends DefaultLookAndFeel implements FocusListener {
     private Image[] indicatorImages = null;
     private Image[] indicatorImagesFocus = null;
 
     /** Creates a new instance of DefaultLookAndFeel */
-    public IndicatorDefaultLookAndFeel() {
+    public IndicatorLookAndFeel() {
     	this.refreshTheme();
     }
 
@@ -109,7 +109,7 @@ public class IndicatorDefaultLookAndFeel extends DefaultLookAndFeel implements F
     	int indiItemGap = in.getGap();
     	int indiHalign = s.getAlignment();
     	int indiValign = in.getVerticalAlignment();
-    	int indiBehavior = in.getBehavior();
+    	int indiBehavior = in.getBehaviour();
     	int indiMaxIndicatorsPerGroup = in.getMaxTimelineItems();
     	
     	int indiDimmedItemWidth = 0;
@@ -125,8 +125,8 @@ public class IndicatorDefaultLookAndFeel extends DefaultLookAndFeel implements F
     	int naviFirstHeight  = 0;
     	int naviLastWidth   = 0;
     	int naviLastHeight  = 0;
-    	int naviToIndiGap = 3;
-    	int naviToNaviGap = indiItemGap;
+    	int naviToIndiGap = in.getNavigationToItemGap();
+    	int naviToNaviGap = in.getNavigationGap();
     	
     	int indiQuantum = in.getQuantum();
     	int indiCurrent = in.getCurrent();
@@ -370,7 +370,6 @@ public class IndicatorDefaultLookAndFeel extends DefaultLookAndFeel implements F
      * @param in component to draw
      */
     public void drawIndicatorImages(Graphics g, Indicator in) {
-        
         Image[] nonFocusedImages = in.getNonFocusedImages();
         if(null == nonFocusedImages) {
             nonFocusedImages = indicatorImages;
@@ -396,7 +395,7 @@ public class IndicatorDefaultLookAndFeel extends DefaultLookAndFeel implements F
     	int indiItemGap = in.getGap();
     	int indiHalign = s.getAlignment();
     	int indiValign = in.getVerticalAlignment();
-    	int indiBehavior = in.getBehavior();
+    	int indiBehavior = in.getBehaviour();
     	int indiMaxTimelineItems = in.getMaxTimelineItems();
     	
     	int indiDimmedItemWidth = 0;
@@ -879,24 +878,24 @@ public class IndicatorDefaultLookAndFeel extends DefaultLookAndFeel implements F
      */
     private void updateIndicatorConstants(UIManager m, boolean focus, String append) {
         try {
-            Image dimmed = Image.createImage("/res/default/indicatorDimmed" + append + "Image.png");
+            Image dimmed = getImage(m, "indicatorDimmed" + append + "Image");
             if(dimmed != null) {
-                Image undimmed = Image.createImage("/res/default/indicatorUndimmed" + append + "Image.png");
+                Image undimmed = getImage(m, "indicatorUndimmed" + append + "Image");
                 if(undimmed != null) {
                     //Scale the undimmed/dimmed image to dimmed/undimmed image dimension
                     //as non-proportional images are currently not supported
-                	if(dimmed.getWidth() <= undimmed.getWidth()) {
-                		undimmed = undimmed.scaledSmallerRatio(dimmed.getWidth(), dimmed.getHeight());
-                	} else {
-                		dimmed = dimmed.scaledSmallerRatio(undimmed.getWidth(), undimmed.getHeight());
-                	}
+                    if(dimmed.getWidth() <= undimmed.getWidth()) {
+                        undimmed = undimmed.scaledSmallerRatio(dimmed.getWidth(), dimmed.getHeight());
+                    } else {
+                        dimmed = dimmed.scaledSmallerRatio(undimmed.getWidth(), undimmed.getHeight());
+                    }
 
                     //Scale the navigation images to dimmed height to align them properly in the widget
                     //as non-proportional images are currently not supported
-                    Image next = Image.createImage("/res/default/indicatorNext" + append + "Image.png").scaledHeight(dimmed.getHeight());
-                    Image previous = Image.createImage("/res/default/indicatorPrevious" + append + "Image.png").scaledHeight(next.getHeight());
-                    Image first = Image.createImage("/res/default/indicatorFirst" + append + "Image.png").scaledHeight(dimmed.getHeight());
-                    Image last = Image.createImage("/res/default/indicatorLast" + append + "Image.png").scaledHeight(next.getHeight());
+                    Image next = getImage(m, "indicatorNext" + append + "Image").scaledHeight(dimmed.getHeight());
+                    Image previous = getImage(m, "indicatorPrevious" + append + "Image").scaledHeight(next.getHeight());
+                    Image first = getImage(m, "indicatorFirst" + append + "Image").scaledHeight(dimmed.getHeight());
+                    Image last = getImage(m, "indicatorLast" + append + "Image").scaledHeight(next.getHeight());
                     if(focus) {
                         setIndicatorFocusImages(dimmed, undimmed, previous, next, first, last);
                     } else {
@@ -907,5 +906,13 @@ public class IndicatorDefaultLookAndFeel extends DefaultLookAndFeel implements F
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    private Image getImage(UIManager m, String imageName) throws IOException {
+        //#if ForResouceEditor == 1
+            return m.getThemeImageConstant("Indicator."+imageName);
+        //#else
+//#             return Image.createImage("/res/default/" + imageName + ".png");
+        //#endif
     }
 }

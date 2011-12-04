@@ -46,8 +46,6 @@ import java.io.IOException;
  */
 public class Indicator extends Component implements IndicatorEventListener {
 
-    private static final int DEFAULT_GAP = 2;
-    
     /** Show no navigation */ 
     public static final int BEHAVIOUR_SHOW_NAVGATION_NONE = 1;
 	
@@ -67,32 +65,26 @@ public class Indicator extends Component implements IndicatorEventListener {
     
     public static final int TYPE_RAW_NUMBERS = 5;
     
-    public static final int ORIENTATION_HORIZONTAL = 1;
-    
-    public static final int ORIENTATION_VERTICAL = 2;
-    
     private Image[] nonFocusedImages = null;
     
     private Image[] focusedImages = null;
-    
-    private int behaviour;
-    
-    private int type;
-    
-    private int orientation;
     
     private int valign = CENTER;
     
     /** Number of items in the time-line */
     private int maxTimelineItems = 5;
 
-    private int gap = DEFAULT_GAP;
+    private int gap = 2;
 
-    private int naviToItemGap = DEFAULT_GAP;
+    private int naviToItemGap = 2;
     
-    private int naviGap = DEFAULT_GAP;
+    private int naviGap = 2;
     
-    private int naviToBorderGap = DEFAULT_GAP;
+    private int naviToBorderGap = 2;
+    
+    private int type = TYPE_RAW_BOX;
+    
+    private int behaviour = BEHAVIOUR_SHOW_NAVGATION_ALWAYS;
     
     /** Indicator quantum */
     private int quantum = 1;
@@ -113,7 +105,7 @@ public class Indicator extends Component implements IndicatorEventListener {
      * Constructs a new indicator with default type.
      */
     public Indicator() {
-        this(TYPE_RAW_DOTS, BEHAVIOUR_SHOW_NAVGATION_ALWAYS, null, null);
+        this(TYPE_RAW_DOTS, BEHAVIOUR_SHOW_NAVGATION_ALWAYS);
     }
     
     /** 
@@ -122,7 +114,7 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @param type the type of the indicator
      */
     public Indicator(int type) {
-        this(type, BEHAVIOUR_SHOW_NAVGATION_ALWAYS, null, null);
+        this(type, BEHAVIOUR_SHOW_NAVGATION_ALWAYS);
     }
     
     /** 
@@ -130,16 +122,15 @@ public class Indicator extends Component implements IndicatorEventListener {
      * 
      * @param type the type of the indicator
      */
-    public Indicator(int type, int behaviour, String imagesFolderPath, String append) {
-        //setUIID("Indicator");
-        setFocusable(false);
-        setType(type);
-        setBehaviour(behaviour);
+    public Indicator(int type, int behaviour) {
+        setType(type < TYPE_IMAGES ? TYPE_RAW_DOTS : type);
+        setBehaviour(behaviour < BEHAVIOUR_SHOW_NAVGATION_NONE ? BEHAVIOUR_SHOW_NAVGATION_ALWAYS : behaviour);
         setVerticalAlignment(CENTER);
-        setOrientation(ORIENTATION_HORIZONTAL);
+        setFocusable(false);
         localize();
-        loadImages(imagesFolderPath,append);
+        loadImages(null,null);
         
+        setUIID("Indicator");
     }
     
     /**
@@ -152,31 +143,7 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @see #BEHAVIOUR_SHOW_NAVGATION_WHEN_BESIDE
      */
     public void setBehaviour(int behaviour) {
-        if(behaviour < BEHAVIOUR_SHOW_NAVGATION_NONE 
-                || behaviour > BEHAVIOUR_SHOW_NAVGATION_WHEN_BESIDE) {
-            behaviour = BEHAVIOUR_SHOW_NAVGATION_NONE;
-        }
-        boolean change = this.behaviour != behaviour;
         this.behaviour = behaviour;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
-    }
-    
-    /**
-     * Set the orientation of the component.
-     * 
-     * @param orientation the orientation of the component
-     * 
-     * @see #ORIENTATION_HORIZONTAL
-     * @see #ORIENTATION_VERTICAL
-     */
-    public void setOrientation(int orientation) {
-        boolean change = this.orientation != orientation;
-        this.orientation = orientation;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
     }
     
     /**
@@ -191,7 +158,6 @@ public class Indicator extends Component implements IndicatorEventListener {
         }
         focusedImages = new Image[imgs.length];
         System.arraycopy(imgs, 0, focusedImages, 0, focusedImages.length);
-        shouldCalcPreferredSize = true;
     }
 
     /**
@@ -206,23 +172,19 @@ public class Indicator extends Component implements IndicatorEventListener {
         }
         nonFocusedImages = new Image[imgs.length];
         System.arraycopy(imgs, 0, nonFocusedImages, 0, nonFocusedImages.length);
-        shouldCalcPreferredSize = true;
     }
     
     /**
-     * Set the number of visible indicators in the component timeline.
-     * <b>NOTE:</b> If timeline items are greater than {@link #getTotal()}
-     * than timeline will be reduced to the latter's value.
+     * Set the number of visible indicators in the component timeline
      * 
-     * @param maxTimelineItems the number of visible indicators in timeline
+     * @param behaviour the behavior of the component
+     * 
+     * @see #BEHAVIOUR_SHOW_NAVGATION_NONE
+     * @see #BEHAVIOUR_SHOW_NAVGATION_ALWAYS
+     * @see #BEHAVIOUR_SHOW_NAVGATION_WHEN_BESIDE
      */
     public void setMaxTimelineItems(int maxTimelineItems) {
-        boolean change = this.maxTimelineItems != maxTimelineItems
-                && this.total != maxTimelineItems && this.maxTimelineItems != this.total;
-        this.maxTimelineItems = this.total < maxTimelineItems ? this.total : maxTimelineItems;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
+        this.maxTimelineItems = maxTimelineItems;
     }
 
     /**
@@ -231,11 +193,7 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @param gap the gap in pixels
      */
     public void setGap(int gap) {
-        boolean change = this.gap != gap;
         this.gap = gap;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
     }
 
     /**
@@ -244,11 +202,7 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @param gap the gap in pixels
      */
     public void setNavigationToItemGap(int navigationToItemGap) {
-        boolean change = this.naviToItemGap != navigationToItemGap;
         this.naviToItemGap = navigationToItemGap;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
     }
 
     /**
@@ -257,11 +211,7 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @param gap the gap in pixels
      */
     public void setNavigationGap(int navigationGap) {
-        boolean change = this.naviGap != navigationGap;
         this.naviGap = navigationGap;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
     }
 
     /**
@@ -270,11 +220,7 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @param gap the gap in pixels
      */
     public void setNavigationToBorderGap(int navigationToBorderGap) {
-        boolean change = this.naviToBorderGap != navigationToBorderGap;
         this.naviToBorderGap = navigationToBorderGap;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
     }
 
     /**
@@ -282,32 +228,19 @@ public class Indicator extends Component implements IndicatorEventListener {
      * 
      * @param show show the navigation
      */
-    public void setNavigationIncrement(boolean show) {
-        boolean change = this.showIncrement != show;
+    public void setNavigationIncrementShown(boolean show) {
         this.showIncrement = show;
 
         //Since navigation increment is not shown, is doesn't make sense
         //to keep the gapping between navigations 'ends' and 'increment'.
-        if(!this.showIncrement) {
-            setNavigationGap(0);
-
-            //Since both navigation increment and navigation ends 
-            //are not shown, so removing the navigation to item gapping.
-            if(!this.showEnds) {
-                setNavigationToBorderGap(0);
-                setNavigationToItemGap(0);
-            }
-
-        } else {
-            //Since navigation increment is shown but navigation ends is not shown,
-            //so it doesn't make sense to keep the inbetween navigation gap.
-            if(!this.showEnds) {
-                setNavigationGap(0);
-            }
-        }
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
+        setNavigationGap(0);
+        
+        //Since both navigation increment and navigation ends 
+        //are not shown, so removing the navigation to item gapping.
+        if(!showEnds) {
+            setNavigationToBorderGap(0);
+            setNavigationToItemGap(0);
+	}
     }
 
     /**
@@ -315,32 +248,19 @@ public class Indicator extends Component implements IndicatorEventListener {
      * 
      * @param show show the navigation
      */
-    public void setNavigationEnds(boolean show) {
-        boolean change = this.showEnds != show;
+    public void setNavigationEndsShown(boolean show) {
         this.showEnds = show;
 
         //Since navigation ends is not shown, is doesn't make sense
         //to keep the gapping between navigations 'ends' and 'increment'
-        if (!this.showEnds) {
-            setNavigationGap(0);
-
-            //Since both navigation increment and navigation ends
-            //are not shown, so removing the navigation to item gapping.
-            if (!showIncrement) {
-                setNavigationToBorderGap(0);
-                setNavigationToItemGap(0);
-            }
-
-        } else {
-            //Since navigation increment is shown but navigation ends is not shown,
-            //so it doesn't make sense to keep the inbetween navigation gap.
-            if(!this.showIncrement) {
-                setNavigationGap(0);
-            }
-        }
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
+        setNavigationGap(0);
+        
+        //Since both navigation increment and navigation ends
+        //are not shown, so removing the navigation to item gapping.
+        if(!showEnds) {
+            setNavigationToBorderGap(0);
+            setNavigationToItemGap(0);
+	}
     }
 
     /**
@@ -349,11 +269,7 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @param quantum the quantum to set
      */
     public void setQuantum(int quantum) {
-        boolean change = this.quantum != quantum;
         this.quantum = Math.max(0, quantum);
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
     }
 
     /**
@@ -362,13 +278,9 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @param total the total to set
      */
     public void setTotal(int total) {
-        boolean change = this.total != total;
         this.total = Math.max(0, total);
         if (this.total < this.quantum) {
             this.quantum = this.total;
-        }
-        if(change) {
-            shouldCalcPreferredSize = true;
         }
     }
 
@@ -381,20 +293,12 @@ public class Indicator extends Component implements IndicatorEventListener {
      * @see #TYPE_IMAGES
      */
     public void setType(int type) {
-        if(type < TYPE_IMAGES || type > TYPE_RAW_NUMBERS) {
-            type = TYPE_IMAGES;
-        }
-        
     	//FIXME Patch to set the type for IMAGES always, 
         //will change when RAW mode is implemented
         if(type != TYPE_IMAGES) {
             type = TYPE_IMAGES;
         }
-        boolean change = this.type != type;
         this.type = type;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
     }
 
     /**
@@ -408,11 +312,7 @@ public class Indicator extends Component implements IndicatorEventListener {
         if(valign != Component.CENTER) {
             valign = Component.CENTER;
         }
-        boolean change = this.valign != valign;
         this.valign = valign;
-        if(change) {
-            shouldCalcPreferredSize = true;
-        }
     }
     
     /**
@@ -426,21 +326,12 @@ public class Indicator extends Component implements IndicatorEventListener {
     }
     
     /**
-     * Returns the behavior of the component
+     * Returns the behavior of Indicator
      * 
-     * @return the behavior of the component
+     * @return the behavior of Indicator
      */
     public int getBehaviour() {
         return behaviour;
-    }
-    
-    /**
-     * Returns the orientation of the component
-     * 
-     * @return the orientation of the component
-     */
-    public int getOrientation() {
-        return orientation;
     }
 
     /**
@@ -581,8 +472,8 @@ public class Indicator extends Component implements IndicatorEventListener {
     /**
      * @inheritDoc
      */
-    public String paramString() {
-        return super.paramString() + ", type = " + getType() + ", orientation = " + getOrientation() + ", behavior = " + getBehaviour() + ", quantum = " + getQuantum() + ", current = " + getCurrent() + ", total = " + getTotal() + ", gap = " + getGap() + ", item2naviGap = " + getNavigationToItemGap() + ", navi2naviGap = " + getNavigationGap() + ", naviToBorderGap = " + getNavigationToBorderGap();
+    protected String paramString() {
+        return super.paramString() + ", type = " + getType() + ", behavior = " + getBehaviour() + ", quantum = " + getQuantum() + ", current = " + getCurrent() + ", total = " + getTotal();
     }
 
     /**
@@ -593,7 +484,7 @@ public class Indicator extends Component implements IndicatorEventListener {
     }
     
     private void checkNext() {
-        if (total /*- 1*/ > current + quantum) {
+        if (total - 1 > current + quantum) {
             current = current + quantum;
         }
     }
@@ -714,32 +605,17 @@ public class Indicator extends Component implements IndicatorEventListener {
      */
     public void loadImages(String resPath, String append) {
         if(null == resPath) {
-            if (type == TYPE_IMAGES) {
-                //loadImagesFromThemeConstant();
-                
-                //UIManager m = UIManager.getInstance();
-                //IndicatorLookAndFeel laf = (IndicatorLookAndFeel) m.getLookAndFeel();
-                //
-                //laf.updateIndicatorConstants(m, false, "");
-                //laf.updateIndicatorConstants(m, true, "Focus");
-                //
-                //laf = null;
-                //m = null;
-            }
-            
+            loadImagesFromThemeConstant();
             return;
         }
         if(null == append) {
             append = "";
         }
-        String path = null;
         /* Load Non-Focused Images */
         try {
-            path = resPath + "/indicatorDimmed" + append + "Image.png";
-            Image dimmed = Image.createImage(path);
+            Image dimmed = Image.createImage(resPath + "/indicatorDimmed" + append + "Image.png");
             if(dimmed != null) {
-                path = resPath + "/indicatorUndimmed" + append + "Image.png";
-                Image undimmed = Image.createImage(path);
+                Image undimmed = Image.createImage(resPath + "/indicatorUndimmed" + append + "Image.png");
                 if(undimmed != null) {
                     //FIXME Scale the undimmed/dimmed image to dimmed/undimmed image dimension
                     //as non-proportional images are currently not supported
@@ -753,185 +629,177 @@ public class Indicator extends Component implements IndicatorEventListener {
                     //as non-proportional images are currently not supported
                     Image next = null;
                     try {
-                        path = resPath + "/indicatorNext" + append + "Image.png";
-                        next = Image.createImage(path);
+                        next = Image.createImage(resPath + "/indicatorNext" + append + "Image.png");
                         if (next != null) {
                             next.scaledHeight(dimmed.getHeight());
                         }
                     } catch (IOException iOException) {
-                        System.out.println("("+path+") image not found");
+                        System.out.println("Indicator Next image not found");
                     }
                     Image previous = null;
                     try {
-                        path = resPath + "/indicatorPrevious" + append + "Image.png";
-                        previous = Image.createImage(path);
+                        previous = Image.createImage(resPath + "/indicatorPrevious" + append + "Image.png");
                         if (previous != null && next != null) {
                             previous.scaledHeight(next.getHeight());
                         }
                     } catch (IOException iOException) {
-                        System.out.println("("+path+") image not found");
+                        System.out.println("Indicator Previous image not found");
                     }
                     Image first = null;
                     try {
-                        path = resPath + "/indicatorFirst" + append + "Image.png";
-                        first = Image.createImage(path);
+                        first = Image.createImage(resPath + "/indicatorFirst" + append + "Image.png");
                         if (first != null) {
                             first.scaledHeight(dimmed.getHeight());
                         }
                     } catch (IOException iOException) {
-                        System.out.println("("+path+") image not found");
+                        System.out.println("Indicator First image not found");
                     }
                     Image last = null;
                     try {
-                        path = resPath + "/indicatorLast" + append + "Image.png";
-                        last = Image.createImage(path);
+                        last = Image.createImage(resPath + "/indicatorLast" + append + "Image.png");
                         if (last != null && next != null) {
                             last.scaledHeight(next.getHeight());
                         }
                     } catch (IOException iOException) {
-                        System.out.println("("+path+") image not found");
+                        System.out.println("Indicator Last image not found");
                     }
                     nonFocusedImages = new Image[]{dimmed, undimmed, previous, next, first, last};
                 }
             }
         } catch (IOException e) {
-            System.out.println("("+path+") image not found");
+            System.out.println("Indicator dimmed/undimmed focus image not found");
+            e.printStackTrace();
         }
         /* Load Focused Images */
         try {
-            path = resPath + "/indicatorDimmedFocus" + append + "Image.png";
-            Image dimmed = Image.createImage(path);
+            Image dimmed = Image.createImage(resPath + "/indicatorDimmedFocus" + append + "Image.png");
             if(dimmed != null) {
-                path = resPath + "/indicatorUndimmedFocus" + append + "Image.png";
-                Image undimmed = Image.createImage(path);
+                Image undimmed = Image.createImage(resPath + "/indicatorUndimmedFocus" + append + "Image.png");
                 if(undimmed != null) {
                     //FIXME Scale the undimmed/dimmed image to dimmed/undimmed image dimension
                     //as non-proportional images are currently not supported
                 	if(dimmed.getWidth() <= undimmed.getWidth()) {
-                            undimmed = undimmed.scaledSmallerRatio(dimmed.getWidth(), dimmed.getHeight());
+                		undimmed = undimmed.scaledSmallerRatio(dimmed.getWidth(), dimmed.getHeight());
                 	} else {
-                            dimmed = dimmed.scaledSmallerRatio(undimmed.getWidth(), undimmed.getHeight());
+                		dimmed = dimmed.scaledSmallerRatio(undimmed.getWidth(), undimmed.getHeight());
                 	}
 
                     //FIXME Scale the navigation images to dimmed height to align them properly in the widget
                     //as non-proportional images are currently not supported
                     Image next = null;
                     try {
-                        path = resPath + "/indicatorNextFocus" + append + "Image.png";
-                        next = Image.createImage(path);
+                        next = Image.createImage(resPath + "/indicatorNextFocus" + append + "Image.png");
                         if (next != null) {
                             next.scaledHeight(dimmed.getHeight());
                         }
                     } catch (IOException iOException) {
-                        System.out.println("("+path+") image not found");
+                        System.out.println("Indicator Next Focus image not found");
                     }
                     Image previous = null;
                     try {
-                        path = resPath + "/indicatorPreviousFocus" + append + "Image.png";
-                        previous = Image.createImage(path);
+                        previous = Image.createImage(resPath + "/indicatorPreviousFocus" + append + "Image.png");
                         if (previous != null && next != null) {
                             previous.scaledHeight(next.getHeight());
                         }
                     } catch (IOException iOException) {
-                        System.out.println("("+path+") image not found");
+                        System.out.println("Indicator Previous Focus image not found");
                     }
                     Image first = null;
                     try {
-                        path = resPath + "/indicatorFirstFocus" + append + "Image.png";
-                        first = Image.createImage(path);
+                        first = Image.createImage(resPath + "/indicatorFirstFocus" + append + "Image.png");
                         if (first != null) {
                             first.scaledHeight(dimmed.getHeight());
                         }
                     } catch (IOException iOException) {
-                        System.out.println("("+path+") image not found");
+                        System.out.println("Indicator First Focus image not found");
                     }
                     Image last = null;
                     try {
-                        path = resPath + "/indicatorLastFocus" + append + "Image.png";
-                        last = Image.createImage(path);
+                        last = Image.createImage(resPath + "/indicatorLastFocus" + append + "Image.png");
                         if (last != null && next != null) {
                             last.scaledHeight(next.getHeight());
                         }
                     } catch (IOException iOException) {
-                        System.out.println("("+path+") image not found");
+                        System.out.println("Indicator Last Focus image not found");
                     }
                     focusedImages = new Image[]{dimmed, undimmed, previous, next, first, last};
                 }
             }
         } catch (IOException e) {
-            System.out.println("("+path+") image not found");
+            System.out.println("Indicator dimmed/undimmed focus image not found");
+            e.printStackTrace();
         }
     }
     
-//    private void loadImagesFromThemeConstant() {
-//        UIManager m = UIManager.getInstance();
-//        /* Load Non-Focused Images */
-//        Image dimmed = m.getThemeImageConstant("Indicator.indicatorDimmedImage");
-//        if(dimmed != null) {
-//            Image undimmed = m.getThemeImageConstant("Indicator.indicatorUndimmedImage");
-//            if(undimmed != null) {
-//                //FIXME Scale the undimmed/dimmed image to dimmed/undimmed image dimension
-//                //as non-proportional images are currently not supported
-//                if(dimmed.getWidth() <= undimmed.getWidth()) {
-//                    undimmed = undimmed.scaledSmallerRatio(dimmed.getWidth(), dimmed.getHeight());
-//                } else {
-//                    dimmed = dimmed.scaledSmallerRatio(undimmed.getWidth(), undimmed.getHeight());
-//                }
-//    
-//                //FIXME Scale the navigation images to dimmed height to align them properly in the widget
-//                //as non-proportional images are currently not supported
-//                Image next = m.getThemeImageConstant("Indicator.indicatorNextImage");
-//                if (next != null) {
-//                    next.scaledHeight(dimmed.getHeight());
-//                }
-//                Image previous = m.getThemeImageConstant("Indicator.indicatorPreviousImage");
-//                if (previous != null && next != null) {
-//                    previous.scaledHeight(next.getHeight());
-//                }
-//                Image first = m.getThemeImageConstant("Indicator.indicatorFirstImage");
-//                if (first != null) {
-//                    first.scaledHeight(dimmed.getHeight());
-//                }
-//                Image last = m.getThemeImageConstant("Indicator.indicatorLastImage");
-//                if (last != null && next != null) {
-//                    last.scaledHeight(next.getHeight());
-//                }
-//                nonFocusedImages = new Image[]{dimmed, undimmed, previous, next, first, last};
-//            }
-//        }
-//        /* Load Focused Images */
-//        dimmed = m.getThemeImageConstant("Indicator.indicatorDimmedFocusImage");
-//        if(dimmed != null) {
-//            Image undimmed = m.getThemeImageConstant("Indicator.indicatorUndimmedFocusImage");
-//            if(undimmed != null) {
-//                //FIXME Scale the undimmed/dimmed image to dimmed/undimmed image dimension
-//                //as non-proportional images are currently not supported
-//                    if(dimmed.getWidth() <= undimmed.getWidth()) {
-//                            undimmed = undimmed.scaledSmallerRatio(dimmed.getWidth(), dimmed.getHeight());
-//                    } else {
-//                            dimmed = dimmed.scaledSmallerRatio(undimmed.getWidth(), undimmed.getHeight());
-//                    }
-//    
-//                //FIXME Scale the navigation images to dimmed height to align them properly in the widget
-//                //as non-proportional images are currently not supported
-//                Image next = m.getThemeImageConstant("Indicator.indicatorNextFocusImage");
-//                if (next != null) {
-//                    next.scaledHeight(dimmed.getHeight());
-//                }
-//                Image previous = m.getThemeImageConstant("Indicator.indicatorPreviousFocusImage");
-//                if (previous != null && next != null) {
-//                    previous.scaledHeight(next.getHeight());
-//                }
-//                Image first = m.getThemeImageConstant("Indicator.indicatorFirstFocusImage");
-//                if (first != null) {
-//                    first.scaledHeight(dimmed.getHeight());
-//                }
-//                Image last = m.getThemeImageConstant("Indicator.indicatorLastFocusImage");
-//                if (last != null && next != null) {
-//                    last.scaledHeight(next.getHeight());
-//                }
-//                focusedImages = new Image[]{dimmed, undimmed, previous, next, first, last};
-//            }
-//        }
-//    }
+    private void loadImagesFromThemeConstant() {
+        UIManager m = UIManager.getInstance();
+        /* Load Non-Focused Images */
+        Image dimmed = m.getThemeImageConstant("Indicator.indicatorDimmedImage");
+        if(dimmed != null) {
+            Image undimmed = m.getThemeImageConstant("Indicator.indicatorUndimmedImage");
+            if(undimmed != null) {
+                //FIXME Scale the undimmed/dimmed image to dimmed/undimmed image dimension
+                //as non-proportional images are currently not supported
+                if(dimmed.getWidth() <= undimmed.getWidth()) {
+                    undimmed = undimmed.scaledSmallerRatio(dimmed.getWidth(), dimmed.getHeight());
+                } else {
+                    dimmed = dimmed.scaledSmallerRatio(undimmed.getWidth(), undimmed.getHeight());
+                }
+
+                //FIXME Scale the navigation images to dimmed height to align them properly in the widget
+                //as non-proportional images are currently not supported
+                Image next = m.getThemeImageConstant("Indicator.indicatorNextImage");
+                if (next != null) {
+                    next.scaledHeight(dimmed.getHeight());
+                }
+                Image previous = m.getThemeImageConstant("Indicator.indicatorPreviousImage");
+                if (previous != null && next != null) {
+                    previous.scaledHeight(next.getHeight());
+                }
+                Image first = m.getThemeImageConstant("Indicator.indicatorFirstImage");
+                if (first != null) {
+                    first.scaledHeight(dimmed.getHeight());
+                }
+                Image last = m.getThemeImageConstant("Indicator.indicatorLastImage");
+                if (last != null && next != null) {
+                    last.scaledHeight(next.getHeight());
+                }
+                nonFocusedImages = new Image[]{dimmed, undimmed, previous, next, first, last};
+            }
+        }
+        /* Load Focused Images */
+        dimmed = m.getThemeImageConstant("Indicator.indicatorDimmedFocusImage");
+        if(dimmed != null) {
+            Image undimmed = m.getThemeImageConstant("Indicator.indicatorUndimmedFocusImage");
+            if(undimmed != null) {
+                //FIXME Scale the undimmed/dimmed image to dimmed/undimmed image dimension
+                //as non-proportional images are currently not supported
+                    if(dimmed.getWidth() <= undimmed.getWidth()) {
+                            undimmed = undimmed.scaledSmallerRatio(dimmed.getWidth(), dimmed.getHeight());
+                    } else {
+                            dimmed = dimmed.scaledSmallerRatio(undimmed.getWidth(), undimmed.getHeight());
+                    }
+
+                //FIXME Scale the navigation images to dimmed height to align them properly in the widget
+                //as non-proportional images are currently not supported
+                Image next = m.getThemeImageConstant("Indicator.indicatorNextFocusImage");
+                if (next != null) {
+                    next.scaledHeight(dimmed.getHeight());
+                }
+                Image previous = m.getThemeImageConstant("Indicator.indicatorPreviousFocusImage");
+                if (previous != null && next != null) {
+                    previous.scaledHeight(next.getHeight());
+                }
+                Image first = m.getThemeImageConstant("Indicator.indicatorFirstFocusImage");
+                if (first != null) {
+                    first.scaledHeight(dimmed.getHeight());
+                }
+                Image last = m.getThemeImageConstant("Indicator.indicatorLastFocusImage");
+                if (last != null && next != null) {
+                    last.scaledHeight(next.getHeight());
+                }
+                focusedImages = new Image[]{dimmed, undimmed, previous, next, first, last};
+            }
+        }
+    }
 }
