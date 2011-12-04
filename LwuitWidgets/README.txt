@@ -6,8 +6,8 @@ By Vimal (vimal.lwuit@ymail.com)
 
 
 USAGE:
-
-
+---------------
+To complete !!
 
 
 
@@ -15,6 +15,12 @@ USAGE:
 
 Change History:
 ---------------
+
+Version 1.1.1
+	1) Moved widget testing code into new project 'LwuitIndicatorWidgetTest'
+	2) Renamed class 'IndicatorDefaultLookAndFeel' to 'IndicatorLookAndFeel' for better understandability
+	3) [Feature] Add orientation (horizontal / vertical) support for this component
+	4) [Feature] Move the default indicator widget resource into 'Vim_Widget_Indicator.res'
 
 Version 1.1.0
 	1) [Feature] Reduced the library size to 9Kb. Working hard to further reduce it :)
@@ -35,6 +41,6 @@ TODO:
 3) Support more Indicator Image Type: IMAGE
 4) Support more vertical aligments: TOP and BOTTOM
 5) Support variable dimensioned images for Dimmed, Undimmed, First, Last Previous and Next
-6) Upgrade the base support to LWUIT 1.5
+6) Upgrade the LWUIT base support to version 1.5
 
 
